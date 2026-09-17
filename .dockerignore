@@ -1,0 +1,12 @@
+.git
+.github
+.vs
+**/bin
+**/obj
+**/publish
+**/*.user
+**/*.suo
+**/appsettings.Local.json
+**/appsettings.*.Local.json
+**/*.mdf
+**/*.ldf
