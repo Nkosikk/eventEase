@@ -1,0 +1,51 @@
+@page
+@model EventEase.Pages.Events.IndexModel
+
+<div class="page-container">
+    <div class="page-header">
+        <h1>Events</h1>
+        <a class="btn-create" asp-page="Create">+ Create New Event</a>
+    </div>
+
+    @if (Model.Events.Any())
+    {
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Venue</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.Events)
+                {
+                    <tr>
+                        <td><strong>@item.EventName</strong></td>
+                        <td>@item.EventDate.ToString("MMM dd, yyyy")</td>
+                        <td>@item.EventDate.ToString("MMM dd, yyyy")</td>
+                        <td>@item.Venue?.VenueName</td>
+                        <td>
+                            <div class="action-links">
+                                <a asp-page="Edit" asp-route-id="@item.EventId">Edit</a>
+                                <a asp-page="Details" asp-route-id="@item.EventId">View</a>
+                                <a asp-page="Delete" asp-route-id="@item.EventId">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <p>No events found. Create your first event to get started!</p>
+            <a class="btn-create" asp-page="Create">+ Create New Event</a>
+        </div>
+    }
+</div>

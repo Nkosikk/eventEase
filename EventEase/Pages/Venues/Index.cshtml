@@ -1,0 +1,49 @@
+@page
+@model EventEase.Pages.Venues.IndexModel
+
+<div class="page-container">
+    <div class="page-header">
+        <h1>Venues</h1>
+        <a class="btn-create" asp-page="Create">+ Create New Venue</a>
+    </div>
+
+    @if (Model.Venues.Any())
+    {
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Capacity</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.Venues)
+                {
+                    <tr>
+                        <td><strong>@item.VenueName</strong></td>
+                        <td>@item.Location</td>
+                        <td>@item.Capacity seats</td>
+                        <td>
+                            <div class="action-links">
+                                <a asp-page="Edit" asp-route-id="@item.VenueId">Edit</a>
+                                <a asp-page="Details" asp-route-id="@item.VenueId">View</a>
+                                <a asp-page="Delete" asp-route-id="@item.VenueId">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <p>No venues found. Create your first venue to get started!</p>
+            <a class="btn-create" asp-page="Create">+ Create New Venue</a>
+        </div>
+    }
+</div>

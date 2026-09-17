@@ -1,0 +1,18 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build output
+**/bin/
+**/obj/
+
+# Local secrets and database files
+**/appsettings.Local.json
+**/appsettings.*.Local.json
+**/*.mdf
+**/*.ldf
+
+# Publish output
+**/publish/
+*.PublishSettings

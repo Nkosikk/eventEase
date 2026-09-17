@@ -1,0 +1,35 @@
+@page
+@model EventEase.Pages.Venues.CreateModel
+
+<div class="crud-form-page">
+    <h1>Create Venue</h1>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error!</strong> @Model.ErrorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <form method="post">
+        <div class="form-group">
+            <label asp-for="Venue.VenueName"></label>
+            <input asp-for="Venue.VenueName" class="form-control" />
+            <span asp-validation-for="Venue.VenueName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Venue.Location"></label>
+            <input asp-for="Venue.Location" class="form-control" />
+            <span asp-validation-for="Venue.Location" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Venue.Capacity"></label>
+            <input asp-for="Venue.Capacity" class="form-control" />
+            <span asp-validation-for="Venue.Capacity" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+
+    <a class="back-link" asp-page="Index">Back to list</a>
+</div>

@@ -1,0 +1,24 @@
+@page "{id:int}"
+@model EventEase.Pages.Bookings.DeleteModel
+
+<h1>Delete Booking</h1>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error!</strong> @Model.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>@Model.Booking.CustomerName</h4>
+    <p>@Model.Booking.CustomerEmail</p>
+</div>
+
+<form method="post">
+    <input type="hidden" asp-for="Booking.BookingId" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+</form>

@@ -1,0 +1,41 @@
+@page
+@model dynamic
+
+<section class="dashboard container">
+    <div class="dashboard-hero">
+        <div>
+            <span class="eyebrow">EVENTEASE MANAGEMENT</span>
+            <h1>Make every event<br /><span>worth remembering.</span></h1>
+            <p>Plan your venues, events, and bookings from one calm, organised workspace.</p>
+        </div>
+        <div class="hero-mark" aria-hidden="true">✦</div>
+    </div>
+
+    <div class="dashboard-heading">
+        <div>
+            <h2>Your workspace</h2>
+            <p>Choose an area to get started.</p>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <a class="dashboard-card card-indigo" asp-page="/Events/Index">
+            <span class="card-icon">◈</span>
+            <span class="card-label">Events</span>
+            <span class="card-description">Create and manage your upcoming occasions.</span>
+            <span class="card-link">Manage events <span>→</span></span>
+        </a>
+        <a class="dashboard-card card-cyan" asp-page="/Venues/Index">
+            <span class="card-icon">⌂</span>
+            <span class="card-label">Venues</span>
+            <span class="card-description">Keep your locations and capacities organised.</span>
+            <span class="card-link">Manage venues <span>→</span></span>
+        </a>
+        <a class="dashboard-card card-purple" asp-page="/Bookings/Index">
+            <span class="card-icon">✓</span>
+            <span class="card-label">Bookings</span>
+            <span class="card-description">Track guests, tickets, and reservations.</span>
+            <span class="card-link">Manage bookings <span>→</span></span>
+        </a>
+    </div>
+</section>

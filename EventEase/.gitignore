@@ -1,0 +1,25 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Local development secrets
+appsettings.Local.json
+appsettings.*.Local.json
+secrets.json
+
+# EF/local database artifacts
+*.mdf
+*.ldf
+
+# Publish output
+publish/
+*.PublishSettings
+
+# OS files
+.DS_Store
+Thumbs.db

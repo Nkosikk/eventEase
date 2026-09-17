@@ -1,0 +1,49 @@
+@page
+@model EventEase.Pages.Events.CreateModel
+
+<div class="crud-form-page">
+    <h1>Create Event</h1>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error!</strong> @Model.ErrorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <form method="post">
+        <div class="form-group">
+            <label asp-for="Event.EventName"></label>
+            <input asp-for="Event.EventName" class="form-control" placeholder="Enter event name" />
+            <span asp-validation-for="Event.EventName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Event.Description"></label>
+            <textarea asp-for="Event.Description" class="form-control" placeholder="Enter event description" rows="4"></textarea>
+            <span asp-validation-for="Event.Description" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Event.EventDate"></label>
+            <input asp-for="Event.EventDate" class="form-control" type="datetime-local" />
+            <span asp-validation-for="Event.EventDate" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Event.VenueId">Venue</label>
+            @if (Model.VenueList != null && Model.VenueList.Count() > 0)
+            {
+                <select asp-for="Event.VenueId" asp-items="Model.VenueList" class="form-control" required>
+                    <option value="">-- Select a Venue --</option>
+                </select>
+            }
+            else
+            {
+                <div class="alert alert-warning">No venues available. Please create a venue first.</div>
+            }
+            <span asp-validation-for="Event.VenueId" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+
+    <a class="back-link" asp-page="Index">Back to list</a>
+</div>

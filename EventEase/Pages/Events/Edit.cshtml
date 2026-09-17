@@ -1,0 +1,28 @@
+@page "{id:int}"
+@model EventEase.Pages.Events.EditModel
+
+<h1>Edit Event</h1>
+
+<form method="post">
+    <input type="hidden" asp-for="Event.EventId" />
+    <div class="form-group">
+        <label asp-for="Event.EventName"></label>
+        <input asp-for="Event.EventName" class="form-control" />
+        <span asp-validation-for="Event.EventName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Event.Description"></label>
+        <textarea asp-for="Event.Description" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+        <label asp-for="Event.EventDate"></label>
+        <input asp-for="Event.EventDate" class="form-control" type="datetime-local" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Event.VenueId">Venue</label>
+        <select asp-for="Event.VenueId" asp-items="Model.VenueList" class="form-control"></select>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+<a asp-page="Index">Back to list</a>

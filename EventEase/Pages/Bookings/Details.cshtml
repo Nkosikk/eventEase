@@ -1,0 +1,14 @@
+@page "{id:int}"
+@model EventEase.Pages.Bookings.DetailsModel
+
+<h1>Booking Details</h1>
+
+<div>
+    <h4>@Model.Booking.CustomerName</h4>
+    <p>@Model.Booking.CustomerEmail</p>
+    <p>Event: @Model.Booking.Event?.EventName</p>
+    <p>Tickets: @Model.Booking.NumberOfTickets</p>
+    <p>Date: @Model.Booking.BookingDate</p>
+</div>
+
+<a asp-page="Index">Back to list</a>

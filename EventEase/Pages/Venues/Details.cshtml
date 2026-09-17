@@ -1,0 +1,13 @@
+@page "{id:int}"
+@model EventEase.Pages.Venues.DetailsModel
+
+<h1>Venue Details</h1>
+
+<div>
+    <h2>@Model.Venue.VenueName</h2>
+    <p>@Model.Venue.Location</p>
+    <p>Capacity: @Model.Venue.Capacity</p>
+    <img src="@Model.Venue.ImageUrl" alt="@Model.Venue.VenueName" style="max-width:600px;" />
+</div>
+
+<a asp-page="Index">Back to list</a>
