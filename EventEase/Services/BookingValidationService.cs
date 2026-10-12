@@ -21,12 +21,16 @@ namespace EventEase.Services
         /// <summary>
         /// Validates that a venue is not double-booked for the same date and time.
         /// </summary>
-        public async Task<ValidationResult> ValidateVenueAvailability(int venueId, DateTime eventDate)
+        public async Task<ValidationResult> ValidateVenueAvailability(int venueId, DateTime eventDate, int? excludedEventId = null)
         {
-            // Check if venue already has an event scheduled for this date
+            var startOfDay = eventDate.Date;
+            var startOfNextDay = startOfDay.AddDays(1);
+
             var existingEvent = await _context.Events
-                .Where(e => e.VenueId == venueId && 
-                           e.EventDate.Date == eventDate.Date)
+                .Where(e => e.VenueId == venueId &&
+                            e.EventDate >= startOfDay &&
+                            e.EventDate < startOfNextDay &&
+                            (!excludedEventId.HasValue || e.EventId != excludedEventId.Value))
                 .FirstOrDefaultAsync();
 
             if (existingEvent != null)
@@ -45,15 +49,14 @@ namespace EventEase.Services
         /// </summary>
         public async Task<ValidationResult> CanDeleteVenue(int venueId)
         {
-            var hasActiveBookings = await _context.Events
-                .Where(e => e.VenueId == venueId)
-                .AnyAsync();
+            var hasActiveBookings = await _context.Bookings
+                .AnyAsync(b => b.Event != null && b.Event.VenueId == venueId);
 
             if (hasActiveBookings)
             {
                 return ValidationResult.Failure(
                     "Cannot delete venue",
-                    "This venue has associated events with active bookings. Please delete all events first."
+                    "This venue has active bookings. Please delete the associated bookings before deleting the venue."
                 );
             }
 
@@ -149,6 +152,43 @@ namespace EventEase.Services
                 return ValidationResult.Failure("Booking validation failed", errors.ToArray());
 
             return ValidationResult.Success("Booking is valid");
+        }
+
+        /// <summary>
+        /// Validates that the selected event's venue and date do not already have a booking.
+        /// </summary>
+        public async Task<ValidationResult> ValidateBookingVenueAvailability(int eventId, int? excludedBookingId = null)
+        {
+            var selectedEvent = await _context.Events
+                .AsNoTracking()
+                .Where(e => e.EventId == eventId)
+                .Select(e => new { e.VenueId, e.EventDate })
+                .FirstOrDefaultAsync();
+
+            if (selectedEvent == null)
+            {
+                return ValidationResult.Failure(
+                    "Invalid event",
+                    "The selected event could not be found.");
+            }
+
+            var startOfDay = selectedEvent.EventDate.Date;
+            var startOfNextDay = startOfDay.AddDays(1);
+            var hasConflictingBooking = await _context.Bookings
+                .AnyAsync(b => b.Event != null &&
+                               b.Event.VenueId == selectedEvent.VenueId &&
+                               b.Event.EventDate >= startOfDay &&
+                               b.Event.EventDate < startOfNextDay &&
+                               (!excludedBookingId.HasValue || b.BookingId != excludedBookingId.Value));
+
+            if (hasConflictingBooking)
+            {
+                return ValidationResult.Failure(
+                    "Venue is already booked",
+                    "This venue already has a booking for the selected event date.");
+            }
+
+            return ValidationResult.Success("Venue is available for booking");
         }
     }
 }

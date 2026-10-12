@@ -48,6 +48,15 @@ namespace EventEase.Pages.Bookings
                 return Page();
             }
 
+            var availabilityResult = await _validationService.ValidateBookingVenueAvailability(Booking.EventId);
+            if (!availabilityResult.IsSuccess)
+            {
+                ErrorMessage = string.Join(" ", availabilityResult.Errors);
+                ModelState.AddModelError("", availabilityResult.Message);
+                await LoadEventsAsync();
+                return Page();
+            }
+
             if (!ModelState.IsValid)
             {
                 await LoadEventsAsync();

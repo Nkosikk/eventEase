@@ -47,6 +47,18 @@ namespace EventEase.Pages.Events
                 return Page();
             }
 
+            var availabilityResult = await _validationService.ValidateVenueAvailability(
+                Event.VenueId,
+                Event.EventDate,
+                Event.EventId);
+            if (!availabilityResult.IsSuccess)
+            {
+                ErrorMessage = string.Join(" ", availabilityResult.Errors);
+                ModelState.AddModelError("", availabilityResult.Message);
+                VenueList = new SelectList(await _context.Venues.OrderBy(v => v.VenueName).ToListAsync(), "VenueId", "VenueName", Event.VenueId);
+                return Page();
+            }
+
             if (!ModelState.IsValid)
             {
                 VenueList = new SelectList(await _context.Venues.OrderBy(v => v.VenueName).ToListAsync(), "VenueId", "VenueName", Event.VenueId);
