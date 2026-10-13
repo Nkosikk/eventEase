@@ -39,12 +39,11 @@ if (!string.IsNullOrEmpty(storageConnectionString) && !storageConnectionString.S
 
 var app = builder.Build();
 
-// Apply pending migrations without inserting sample records.
-using (var scope = app.Services.CreateScope())
+if (builder.Configuration.GetValue<bool>("Database:ApplyMigrationsOnStartup"))
 {
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<EventEase.Data.EventEaseDbContext>();
-    context.Database.Migrate();
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<EventEase.Data.EventEaseDbContext>();
+    await context.Database.MigrateAsync();
 }
 
 // Configure the HTTP request pipeline.

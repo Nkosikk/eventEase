@@ -39,7 +39,8 @@ namespace EventEase.Data.Migrations
 
                     b.Property<string>("CustomerName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("EventId")
                         .HasColumnType("int");
@@ -87,6 +88,16 @@ namespace EventEase.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("EventTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EventTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -101,9 +112,9 @@ namespace EventEase.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("BookingDisplayView", "dbo");
+                    b.ToTable((string)null);
 
-                    b.ToView("BookingDisplayView", (string)null);
+                    b.ToView("BookingDisplayView", "dbo");
                 });
 
             modelBuilder.Entity("EventEase.Models.Event", b =>
@@ -139,6 +150,23 @@ namespace EventEase.Data.Migrations
                     b.ToTable("Events");
                 });
 
+            modelBuilder.Entity("EventEase.Models.EventType", b =>
+                {
+                    b.Property<int>("EventTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventTypeId"));
+
+                    b.Property<string>("EventTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("EventTypeId");
+
+                    b.ToTable("EventTypes");
+                });
+
             modelBuilder.Entity("EventEase.Models.Venue", b =>
                 {
                     b.Property<int>("VenueId")
@@ -150,9 +178,15 @@ namespace EventEase.Data.Migrations
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
+                    b.Property<int?>("EventTypeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Location")
                         .IsRequired()
@@ -163,6 +197,8 @@ namespace EventEase.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("VenueId");
+
+                    b.HasIndex("EventTypeId");
 
                     b.ToTable("Venues");
                 });
@@ -189,9 +225,24 @@ namespace EventEase.Data.Migrations
                     b.Navigation("Venue");
                 });
 
+            modelBuilder.Entity("EventEase.Models.Venue", b =>
+                {
+                    b.HasOne("EventEase.Models.EventType", "EventType")
+                        .WithMany("Venues")
+                        .HasForeignKey("EventTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("EventType");
+                });
+
             modelBuilder.Entity("EventEase.Models.Event", b =>
                 {
                     b.Navigation("Bookings");
+                });
+
+            modelBuilder.Entity("EventEase.Models.EventType", b =>
+                {
+                    b.Navigation("Venues");
                 });
 
             modelBuilder.Entity("EventEase.Models.Venue", b =>

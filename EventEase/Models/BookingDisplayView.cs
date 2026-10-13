@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace EventEase.Models
 {
     /// <summary>
@@ -8,7 +5,6 @@ namespace EventEase.Models
     /// This view consolidates booking information from Venue, Event, and Booking tables
     /// for easier management and display by booking specialists.
     /// </summary>
-    [Table("BookingDisplayView", Schema = "dbo")]
     public class BookingDisplayView
     {
         public int BookingId { get; set; }
