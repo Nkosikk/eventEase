@@ -23,36 +23,33 @@ namespace EventEase.Pages.Bookings
         [BindProperty(SupportsGet = true)]
         public string? SearchType { get; set; } = "all";
 
+        [BindProperty(SupportsGet = true)]
+        public int? EventTypeId { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public DateTime? StartDate { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public DateTime? EndDate { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public bool? IsAvailable { get; set; }
+
+        public IList<EventType> EventTypes { get; set; } = new List<EventType>();
+
         public async Task OnGetAsync()
         {
-            // Join Bookings with Events and Venues to create the display data
-            IQueryable<BookingDisplayView> query = _context.Bookings
-                .Include(b => b.Event)
-                .ThenInclude(e => e.Venue)
+            EventTypes = await _context.EventTypes
                 .AsNoTracking()
-                .Select(b => new BookingDisplayView
-                {
-                    BookingId = b.BookingId,
-                    CustomerName = b.CustomerName,
-                    CustomerEmail = b.CustomerEmail,
-                    BookingDate = b.BookingDate,
-                    NumberOfTickets = b.NumberOfTickets,
-                    EventId = b.Event.EventId,
-                    EventName = b.Event.EventName,
-                    EventDate = b.Event.EventDate,
-                    EventDescription = b.Event.Description,
-                    VenueId = b.Event.Venue.VenueId,
-                    VenueName = b.Event.Venue.VenueName,
-                    Location = b.Event.Venue.Location,
-                    Capacity = b.Event.Venue.Capacity
-                });
+                .OrderBy(et => et.EventTypeName)
+                .ToListAsync();
 
-            // Apply search filter if provided
+            var query = _context.Bookings.AsNoTracking();
+
             if (!string.IsNullOrWhiteSpace(SearchTerm))
             {
                 if (SearchType == "bookingid")
                 {
-                    // Search by BookingId
                     if (int.TryParse(SearchTerm, out int bookingId))
                     {
                         query = query.Where(b => b.BookingId == bookingId);
@@ -60,21 +57,69 @@ namespace EventEase.Pages.Bookings
                 }
                 else if (SearchType == "eventname")
                 {
-                    // Search by Event Name
-                    query = query.Where(b => b.EventName.Contains(SearchTerm));
+                    query = query.Where(b => b.Event!.EventName.Contains(SearchTerm));
                 }
                 else
                 {
-                    // Default: search in all fields
-                    query = query.Where(b => 
+                    query = query.Where(b =>
                         b.BookingId.ToString().Contains(SearchTerm) ||
                         b.CustomerName.Contains(SearchTerm) ||
                         b.CustomerEmail.Contains(SearchTerm) ||
-                        b.EventName.Contains(SearchTerm));
+                        b.Event!.EventName.Contains(SearchTerm));
                 }
             }
 
-            Bookings = await query.OrderByDescending(b => b.BookingDate).ToListAsync();
+            if (EventTypeId.HasValue)
+            {
+                query = query.Where(b => b.Event!.Venue!.EventTypeId == EventTypeId.Value);
+            }
+
+            if (StartDate.HasValue)
+            {
+                query = query.Where(b => b.Event!.EventDate >= StartDate.Value.Date);
+            }
+
+            if (EndDate.HasValue)
+            {
+                var exclusiveEndDate = EndDate.Value.Date.AddDays(1);
+                query = query.Where(b => b.Event!.EventDate < exclusiveEndDate);
+            }
+
+            if (StartDate.HasValue && EndDate.HasValue && StartDate.Value.Date > EndDate.Value.Date)
+            {
+                ModelState.AddModelError(string.Empty, "The start date cannot be later than the end date.");
+                query = query.Where(_ => false);
+            }
+
+            if (IsAvailable.HasValue)
+            {
+                query = query.Where(b => b.Event!.Venue!.IsAvailable == IsAvailable.Value);
+            }
+
+            Bookings = await query
+                .OrderByDescending(b => b.BookingDate)
+                .Select(b => new BookingDisplayView
+                {
+                    BookingId = b.BookingId,
+                    CustomerName = b.CustomerName,
+                    CustomerEmail = b.CustomerEmail,
+                    BookingDate = b.BookingDate,
+                    NumberOfTickets = b.NumberOfTickets,
+                    EventId = b.Event!.EventId,
+                    EventName = b.Event.EventName,
+                    EventDate = b.Event.EventDate,
+                    EventDescription = b.Event.Description,
+                    VenueId = b.Event.Venue!.VenueId,
+                    VenueName = b.Event.Venue.VenueName,
+                    Location = b.Event.Venue.Location,
+                    Capacity = b.Event.Venue.Capacity,
+                    EventTypeId = b.Event.Venue.EventTypeId,
+                    EventTypeName = b.Event.Venue.EventType == null
+                        ? "Unassigned"
+                        : b.Event.Venue.EventType.EventTypeName,
+                    IsAvailable = b.Event.Venue.IsAvailable
+                })
+                .ToListAsync();
         }
     }
 }

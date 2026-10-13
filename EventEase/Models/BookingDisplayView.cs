@@ -36,5 +36,11 @@ namespace EventEase.Models
         public string Location { get; set; } = string.Empty;
 
         public int Capacity { get; set; }
+
+        public int? EventTypeId { get; set; }
+
+        public string EventTypeName { get; set; } = string.Empty;
+
+        public bool IsAvailable { get; set; }
     }
 }

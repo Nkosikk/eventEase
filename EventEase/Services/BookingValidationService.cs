@@ -99,6 +99,9 @@ namespace EventEase.Services
             if (string.IsNullOrWhiteSpace(venue.Location))
                 errors.Add("Location is required");
 
+            if (!venue.EventTypeId.HasValue || venue.EventTypeId.Value <= 0)
+                errors.Add("Event type selection is required");
+
             if (errors.Any())
                 return ValidationResult.Failure("Venue validation failed", errors.ToArray());
 

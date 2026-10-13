@@ -10,6 +10,7 @@ namespace EventEase.Data
         }
 
         public DbSet<Venue> Venues { get; set; } = null!;
+        public DbSet<EventType> EventTypes { get; set; } = null!;
         public DbSet<Event> Events { get; set; } = null!;
         public DbSet<Booking> Bookings { get; set; } = null!;
         public DbSet<BookingDisplayView> BookingDisplayViews { get; set; } = null!;
@@ -21,6 +22,15 @@ namespace EventEase.Data
             // Configure Venue
             modelBuilder.Entity<Venue>()
                 .HasKey(v => v.VenueId);
+
+            modelBuilder.Entity<EventType>()
+                .HasKey(et => et.EventTypeId);
+
+            modelBuilder.Entity<Venue>()
+                .HasOne(v => v.EventType)
+                .WithMany(et => et.Venues)
+                .HasForeignKey(v => v.EventTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Configure Event
             modelBuilder.Entity<Event>()

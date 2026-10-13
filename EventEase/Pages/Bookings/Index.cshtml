@@ -7,18 +7,49 @@
         <a class="btn-create" asp-page="Create">+ Create New Booking</a>
     </div>
 
-    <!-- Search Form -->
     <div class="search-section">
         <form method="get" class="search-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="search-controls">
-                <select name="searchType" class="search-select">
-                    <option value="all" selected="@(Model.SearchType == "all")">All Fields</option>
-                    <option value="bookingid" selected="@(Model.SearchType == "bookingid")">Booking ID</option>
-                    <option value="eventname" selected="@(Model.SearchType == "eventname")">Event Name</option>
+                <select asp-for="SearchType" class="search-select">
+                    <option value="all">All Fields</option>
+                    <option value="bookingid">Booking ID</option>
+                    <option value="eventname">Event Name</option>
                 </select>
-                <input type="text" name="searchTerm" placeholder="Enter search term..." value="@Model.SearchTerm" class="search-input" />
+                <input asp-for="SearchTerm" type="text" placeholder="Enter search term..." class="search-input" />
+            </div>
+            <div class="filter-controls">
+                <div class="filter-field">
+                    <label asp-for="EventTypeId">Event Type</label>
+                    <select asp-for="EventTypeId" class="search-select">
+                        <option value="">All Event Types</option>
+                        @foreach (var eventType in Model.EventTypes)
+                        {
+                            <option value="@eventType.EventTypeId">@eventType.EventTypeName</option>
+                        }
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label asp-for="StartDate">From</label>
+                    <input asp-for="StartDate" type="date" class="search-input" />
+                </div>
+                <div class="filter-field">
+                    <label asp-for="EndDate">To</label>
+                    <input asp-for="EndDate" type="date" class="search-input" />
+                </div>
+                <div class="filter-field">
+                    <label asp-for="IsAvailable">Venue Availability</label>
+                    <select asp-for="IsAvailable" class="search-select">
+                        <option value="">All Venues</option>
+                        <option value="true">Available</option>
+                        <option value="false">Unavailable</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-actions">
                 <button type="submit" class="search-button">Search</button>
-                @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                @if (!string.IsNullOrEmpty(Model.SearchTerm) || Model.EventTypeId.HasValue ||
+                    Model.StartDate.HasValue || Model.EndDate.HasValue || Model.IsAvailable.HasValue)
                 {
                     <a asp-page="Index" class="search-clear">Clear</a>
                 }
@@ -36,7 +67,9 @@
                         <th>Customer</th>
                         <th>Email</th>
                         <th>Event</th>
+                        <th>Event Type</th>
                         <th>Venue</th>
+                        <th>Availability</th>
                         <th>Seats</th>
                         <th>Event Date</th>
                         <th>Booking Date</th>
@@ -51,7 +84,9 @@
                         <td>@item.CustomerName</td>
                         <td>@item.CustomerEmail</td>
                         <td>@item.EventName</td>
+                        <td>@item.EventTypeName</td>
                         <td>@item.VenueName</td>
+                        <td>@(item.IsAvailable ? "Available" : "Unavailable")</td>
                         <td>@item.NumberOfTickets tickets</td>
                         <td>@item.EventDate.ToString("MMM dd, yyyy")</td>
                         <td>@item.BookingDate.ToString("MMM dd, yyyy")</td>
@@ -71,7 +106,8 @@
     else
     {
         <div class="empty-state">
-            @if (!string.IsNullOrEmpty(Model.SearchTerm))
+            @if (!string.IsNullOrEmpty(Model.SearchTerm) || Model.EventTypeId.HasValue ||
+                Model.StartDate.HasValue || Model.EndDate.HasValue || Model.IsAvailable.HasValue)
             {
                 <p>No bookings found matching your search criteria.</p>
                 <a asp-page="Index">View all bookings</a>
@@ -95,14 +131,24 @@
 
     .search-form {
         display: flex;
+        flex-direction: column;
         gap: 10px;
-        flex-wrap: wrap;
     }
 
-    .search-controls {
+    .search-controls,
+    .filter-controls,
+    .search-actions {
         display: flex;
         gap: 10px;
         width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .filter-field {
+        display: flex;
+        flex: 1 1 180px;
+        flex-direction: column;
+        gap: 4px;
     }
 
     .search-select,
@@ -148,4 +194,3 @@
         text-decoration: none;
     }
 </style>
-</div>

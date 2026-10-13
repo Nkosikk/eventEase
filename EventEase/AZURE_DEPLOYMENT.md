@@ -77,7 +77,31 @@ Open the deployed application:
 az webapp browse --resource-group $resourceGroup --name $appName
 ```
 
-## 6. Deployment evidence for the assessment
+## 6. Automatic deployment from GitHub
+
+The workflow at `.github/workflows/deploy-eventease.yml` builds, tests, publishes and deploys the application to the `EventEase1` App Service whenever a commit is pushed to `main`. It authenticates with OpenID Connect (OIDC), so no Azure password or publish profile is stored in GitHub.
+
+### Rotate exposed publishing credentials
+
+If a publish profile has been shared in chat, email, logs or source control, treat it as compromised. In the Azure portal, open the `EventEase1` App Service and reset its publishing credentials before running this workflow. Because deployment uses OIDC, disable FTP and SCM basic-auth publishing credentials afterward when they are not otherwise required.
+
+### Configure Azure OIDC once
+
+1. In Microsoft Entra ID, create an app registration for GitHub deployment.
+2. On that app registration, add a federated credential for **GitHub Actions deploying Azure resources** with:
+   - Organization: `Nkosikk`
+   - Repository: `eventEase`
+   - Entity type: `Branch`
+   - Branch: `main`
+3. On the `EventEase1` App Service, open **Access control (IAM)** and assign the app registration's service principal the **Website Contributor** role. Scope the assignment to this App Service rather than the subscription.
+4. In the GitHub repository, open **Settings > Secrets and variables > Actions > Variables** and create:
+   - `AZURE_CLIENT_ID`: the app registration's Application (client) ID
+   - `AZURE_TENANT_ID`: the Microsoft Entra Directory (tenant) ID
+   - `AZURE_SUBSCRIPTION_ID`: the Azure subscription ID containing `EventEase1`
+
+No GitHub secret is required for OIDC. After these variables and the federated credential exist, push to `main` or manually run **Build and deploy EventEase** from the repository's Actions tab.
+
+## 7. Deployment evidence for the assessment
 
 Capture screenshots of:
 
@@ -89,7 +113,7 @@ Capture screenshots of:
 - Tables and sample data in Azure SQL
 - Events, venues and bookings working from the deployed application
 
-## 7. Troubleshooting
+## 8. Troubleshooting
 
 View application logs with:
 
