@@ -11,7 +11,8 @@ builder.Services.AddLogging();
 // Configure DbContext - use DefaultConnection
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<EventEase.Data.EventEaseDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString, sqlOptions =>
+        sqlOptions.EnableRetryOnFailure()));
 
 // Register validation service
 builder.Services.AddScoped<BookingValidationService>();
@@ -38,12 +39,12 @@ if (!string.IsNullOrEmpty(storageConnectionString) && !storageConnectionString.S
 
 var app = builder.Build();
 
-// Create the database schema without inserting sample records.
+// Apply pending migrations without inserting sample records.
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<EventEase.Data.EventEaseDbContext>();
-    context.Database.EnsureCreated();
+    context.Database.Migrate();
 }
 
 // Configure the HTTP request pipeline.

@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <UseAppHost>false</UseAppHost>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+    <UserSecretsId>EventEase-6c95bf86-3485-4da8-907f-924e91479293</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
